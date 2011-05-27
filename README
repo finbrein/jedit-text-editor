@@ -1,0 +1,61 @@
+Welcome to JEdit - Text Editor for a Programmer 
+
+***********************************************************************************************************************
+ABOUT THE APPLICATION
+
+This is a text editor for a programmer. It is developed as a Java Swing Application. 
+
+It is a simple text editor that supports multiple document interface (MDI), whereby a user can work on several 
+documents at the same time by opening several windows or tabs. It is possible to minimize and maximize each window in 
+the app. There is a bar for line numbering on the left side of the window and a status line at the bottom of the user 
+interface.
+
+The application allows a user to Create a new file, Open an existing file, Save a file, Save As for a 
+file, Close the selected tab from the tabbed pane, Exit or quit the program. 
+
+In this application, programmer or user can also edit the plain text in the code area. User can Cut, Copy, Paste and 
+Select All text. 
+
+In addition to Edit, I have added formatting options to Bold, Italicize, Normalize the content of the code area. I have 
+also included options to change the size, font type and color of the text document. 
+
+I have used JTextArea component. It is more suited for editing program source code than JEditorPane, because it drops the 
+unnecessary features (images, variable-width lines, and so on). It is also faster and doesn't have as many problems. It 
+can be used in other applications.
+
+Technology involved includes Java. The development environment is Eclipse Java EE IDE for Web Developers. Version: Helios 
+Service Release 2. In addition to my own comments, the Javadoc comments are generated using JAutodoc 1.9.0. A plugin that 
+can installed in Eclipse. The Javadoc document is generated using Javadoc in Eclipse
+
+The JEditor folder is the app folder and contains the project including the source files and all other the resources.  
+Other files are -
+
++ JEditor.pdf - contains extra documentation for this application.
++ JEditor.jar - a runnable jar file. 
++ directory-tree.PNG - is an image of the directory structure of the project.
++ jeditscreenshot.JPG - a screen shot of the running application.
++ doc/index.html - index page for the javadoc
+
+NECESSARY ELEMENT:
++ Java 1.6+ SDK.
+
+CONFIGURATION:
++ Eclipse is installed and configured.
++ Java SDK is installed and configured.
+
+PACKAGING:
++ Download the project from the repository. 
++ Import the project into Eclipse using File | Menu , and [import]
++ Run 
+
+DEPLOYING A RUNNABLE JAVA APPLICATION
+I have created a runnable JAR file called JEditor.jar. This can be created by following the instruction 
+here - http://bit.ly/jrctn9
+The application can be run by double-clicking on it.
+
+Getting Help
+**********************************************************************************************************************
+If you have a question or need help with JEdit text editor, you can get help from the following sources:
+
+* eMail: finbrein@gmail.com
+* IRC: irc://irc.freenode.net #OpenMRS (my nickname is finbrein)
