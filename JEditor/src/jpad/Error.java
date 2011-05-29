@@ -11,7 +11,7 @@ import javax.swing.*;
  * <b>Copyright:</b> 2011 Michael Aro<br>
  * <b>License:</b> Free Software<br>
  * <b>Version:</b> 1.0<br>
- * <b>Date:</b> 24.05.2011<br>
+ * <b>Date:</b> 29.05.2011<br>
  * <br>
  * <b>Info:</b> Class for error output
  */
