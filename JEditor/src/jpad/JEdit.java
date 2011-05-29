@@ -21,6 +21,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
@@ -52,6 +54,9 @@ public class JEdit extends JFrame implements ActionListener {
 	/** The editor pane. */
 	//private SpecialTextArea[] editorPane = new SpecialTextArea[5];//null; // JTextArea	
 	private ArrayList<SpecialTextArea> editorPane = new ArrayList<SpecialTextArea>(); // JTextArea
+	
+	/** The file information. */
+	Map<Object,String> fileInfoMap =new HashMap<Object, String>();
 
 	/** The desktop. */
 	private JDesktopPane theDesktop; // Desktop pane is very important for JInternalFrame 
@@ -227,6 +232,10 @@ public class JEdit extends JFrame implements ActionListener {
 
 				SpecialTextArea specialArea = new SpecialTextArea(); // create new panel
 				editorPane.add(specialArea);
+				
+				// add or set elements in Map put method key and value pair
+				fileInfoMap.put(new Integer(COUNTER), fileDir);
+				
 				editorPane.get(COUNTER).getModel().setText(s); // Use TextComponent 
 				//editorPane[COUNTER].getModel().read(reader, "");
 				frame.add(editorPane.get(COUNTER), BorderLayout.CENTER); // add panel
@@ -262,7 +271,8 @@ public class JEdit extends JFrame implements ActionListener {
 			}
 		}
 		this.setFileOpen(true);
-		//this.setStatus(true);
+		this.setFileNew(false);	
+
 	}
 
 
@@ -272,16 +282,26 @@ public class JEdit extends JFrame implements ActionListener {
 	 */
 	private void dataSave() {
 		int selectedIndex = tabbedPane.getSelectedIndex();
-		if (editorPane.get(selectedIndex) == null) {
+		String filePath = fileInfoMap.get(new Integer(selectedIndex));
+		if (editorPane.size() == 0) {
 			new Error("No Data loaded");
 			return;
 		}
-		if (isFileOpen())
-		{
-			writeFile(getFileDir());
+		
+		if (editorPane.get(selectedIndex) == null) {
+			new Error("No Data loaded");
+			return;
+		}	
+		
+		if (!filePath.equals(""))
+			this.setFileNew(false);
+		
+		if (isFileNew())
+		{		
+			dataiSave();			
 		}
 		else {
-			dataiSave();
+			writeFile(filePath);
 		}
 
 	}
@@ -329,6 +349,11 @@ public class JEdit extends JFrame implements ActionListener {
 	 */
 	private void dataiSave() {
 		int selectedIndex = tabbedPane.getSelectedIndex();
+		if (editorPane.size() == 0) {
+			new Error("No Data loaded");
+			return;
+		}
+		
 		if (editorPane.get(selectedIndex) == null) {
 			new Error("No Data loaded");
 			return;
@@ -336,7 +361,9 @@ public class JEdit extends JFrame implements ActionListener {
 		JFileChooser chooser = new JFileChooser("."); // in the current directory
 														// start
 		int returnVal = chooser.showSaveDialog(JEdit.this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		if (returnVal == JFileChooser.CANCEL_OPTION)
+			return;
+		else if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File f = chooser.getSelectedFile();
 			fileName = chooser.getSelectedFile().getName(); // Get file name
 			setFileDir(chooser.getSelectedFile().getPath()); // Read path
@@ -350,7 +377,26 @@ public class JEdit extends JFrame implements ActionListener {
 			}
 		}
 		
-		dataiClose();
+		
+		/* String to split. */
+		String newName = fileName;
+		
+		String[] splitName;
+		
+		/* delimiter - escape special character "." */
+		String delimiter = "\\.";
+		
+		splitName = newName.split(delimiter);				
+		
+		// Rename tab title		
+		tabbedPane.setTitleAt(selectedIndex, splitName[0]);
+		
+		// updating elements in Map put method key and value pair
+		fileInfoMap.put(new Integer(selectedIndex), getFileDir());
+		
+		this.setFileOpen(true);		
+		this.setFileNew(false);	
+		
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////
@@ -360,12 +406,17 @@ public class JEdit extends JFrame implements ActionListener {
 	 */
 	private void dataNew() {
 
-		this.setStatus(false);
+		this.setFileNew(true);	
+		this.setFileDir("");
 		// create internal frame
 		JInternalFrame frame = new JInternalFrame("", true, true, true, true);
 		
 		SpecialTextArea specialArea = new SpecialTextArea(); // create new panel
 		editorPane.add(specialArea);
+		
+		// add or set elements in Map put method key and value pair
+		fileInfoMap.put(new Integer(COUNTER), fileDir);
+		
 		//editorPane.setParamText(""); // Use TextComponent
 		frame.add(editorPane.get(COUNTER), BorderLayout.CENTER); // add panel
 
@@ -385,9 +436,9 @@ public class JEdit extends JFrame implements ActionListener {
 		
 		mainPanel.add(tabbedPane);		
 
-		COUNTER++;
+		COUNTER++;	
 		
-		this.setStatus(false);
+		this.setFileOpen(false);
 
 	} // end method actionPerformed
 	
@@ -423,11 +474,30 @@ public class JEdit extends JFrame implements ActionListener {
 	 */
 	public void dataiClose()
 	{
-		this.setStatus(false);
-		// Remove the current tab
 		int selectedIndex = tabbedPane.getSelectedIndex();
+		if (editorPane.size() == 0) {
+			new Error("No Data loaded");
+			return;
+		}
+		
+		if (editorPane.get(selectedIndex) == null) {
+			new Error("No Data loaded");
+			return;
+		}
+		
+		// Remove the current tab		
 		tabbedPane.remove(selectedIndex);
 		editorPane.remove(selectedIndex);
+		
+		// Remove file info
+		fileInfoMap.remove(new Integer(selectedIndex));
+		
+		this.setStatus(false);
+		this.setFileNew(false);
+		this.setFileOpen(false);
+		this.setFileDir("");
+		
+		// Reduce the number of tabs
 		COUNTER--;
 	}
 	
@@ -439,14 +509,15 @@ public class JEdit extends JFrame implements ActionListener {
 	 * Cut.
 	 */
 	private void cut() {
-		if (editorPane.get(COUNTER) == null) {
+		int selectedIndex = tabbedPane.getSelectedIndex();
+		if (editorPane.get(selectedIndex) == null) {
 			return;
 		}
 
 		//int selectedIndex = tabbedPane.getSelectedIndex();
 		//tabbedPane.get
 		//System.out.println("Print component " + tabbedPane.getSelectedComponent().getName().toString());
-		editorPane.get(COUNTER).getModel().cut();
+		editorPane.get(selectedIndex).getModel().cut();
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////
